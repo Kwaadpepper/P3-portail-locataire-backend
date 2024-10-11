@@ -1,0 +1,545 @@
+openapi: 3.0.0
+info:
+  title: Rental oc
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001/api
+security:
+  - bearerAuth: []
+
+
+paths:
+
+  /auth/register:
+    post:
+      summary: 'Créer un compte pour utiliser directement l´application'
+      description:
+        Fournir les champs pour inscrire un utilisateur, ainsi
+        etre directement connecté et utiliser l´application en
+        obtenant un token JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Register"
+      responses:
+        '200':
+          $ref: '#/components/responses/200JwtToken'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+  /auth/login:
+    post:
+      summary: 'Se connecter à l´application'
+      description:
+        Fournir les informations pour identifier un utilisateur et obtenir un token JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+      responses:
+        '200':
+          $ref: '#/components/responses/200JwtToken'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /messages:
+    post:
+      summary: 'Envoyer un message à un utilisateur'
+      description:
+        Pour envoyer un message en plain text à un utilisateur.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          $ref: '#/components/responses/200MessageSent'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  
+  /auth/me:
+    get:
+      summary: 'Obtenir les information de l´utilisateur correspondant au token JWT'
+      description:
+        Utilisé pour afficher les données de l´utilisateur actif.
+      responses:
+        '200':
+          description: 'Les informations qui correspondent à l´utilisateur du token JWT'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /rentals:
+    get:
+      summary: 'Obtenir la liste des locations'
+      description:
+        Pour obtenir la liste des locations,
+        **Cet appel devrais être paginé**
+      responses:
+        '200':
+          $ref: '#/components/responses/200RentalList'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: 'Pour créer un location'
+      description:
+        Pour créer et persiter une location
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RentalCREATE"
+      responses:
+        '200':
+          $ref: '#/components/responses/200RentalCreated'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /rentals/{id}:
+    get:
+      summary: 'Obtenir le détail d´une location'
+      description:
+        Afficher le détail d'une location et permettre
+        à un utilisateur d'envoyer un message
+      responses:
+        '200':
+          $ref: '#/components/responses/200Rental'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      parameters:
+        - name: id
+          in: path
+          description: 'Un **id** d´une location'
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+    put:
+      summary: 'Obtenir le détail d´une location'
+      description:
+        Pour mettre à jour le détail d´une location,
+        les images ne sont pas gérés pour simplifier l´exercice d´implémentation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalUPDATE'
+      responses:
+        '200':
+          $ref: '#/components/responses/200RentalUpdated'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      parameters:
+        - name: id
+          in: path
+          description: 'Un **id** d´une location'
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+
+  /user/{id}:
+    get:
+      summary: 'Pour obtenir les information sur un utilisateur'
+      description:
+        Pour obetnir les information d´un user, est utilisé sur
+        la page détails d´une offre de location.
+      responses:
+        '200':
+          description: 'Les informations qui correspondent à un utilisateur'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      parameters:
+        - name: id
+          in: path
+          description: 'Un **id** d´un utilisateur'
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    200JwtToken:
+      description: 'Un token JWT pour les futurs appels'
+      content:
+        application/json:
+          example: |-
+            {
+              "token": "jwt"
+            }
+
+    200MessageSent:
+      description: 'Un message de retour pour l´utilisateur'
+      content:
+        application/json:
+          example: |-
+            {
+              "message": "Message send with success"
+            }
+
+    200RentalList:
+      description: 'Location entity'
+      content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/RentalList'
+
+    200Rental:
+      description: 'A rental object reponse'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Rental'
+  
+    200RentalCreated:
+      description: 'Un message de retour pour l´utilisateur'
+      content:
+        application/json:
+          example: |-
+            {
+              "message": "Rental created !"
+            }
+
+    200RentalUpdated:
+      description: 'Un message de retour pour l´utilisateur'
+      content:
+        application/json:
+          example: |-
+            {
+              "message": "Rental updated !"
+            }
+  
+    BadRequestError:
+      description: 'Mauvaise formulation de la requête'
+      content:
+        application/json:
+          example: '{}'
+
+    UnauthorizedError:
+      description: 'Le Bearer token est invalide'
+      content:
+        application/json:
+          example: |-
+            {
+              "message": "error"
+            }
+      
+  schemas:
+    Register:
+      type: object
+      properties:
+        name:
+          description: 'The user name'
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          description: 'The user email'
+          type: string
+          minLength: 1
+          maxLength: 255
+        password:
+          description: 'The user password'
+          type: string
+          minLength: 1
+          maxLength: 255
+      required: 
+        - name
+        - email
+        - password
+      example: |-
+        {
+          "name": "Firstname Lastname",
+          "email": "email@example.com",
+          "password": "MyS3cretP4$$word"
+        }
+
+    Login:
+      type: object
+      properties:
+        email:
+          description: 'The user email'
+          type: string
+          minLength: 1
+          maxLength: 255
+        password:
+          description: 'The user password'
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+        - email
+        - password
+      example: |-
+        {
+          "email": "email@example.com",
+          "password": "MyS3cretP4$$word"
+        }
+        
+    User:
+      description: 'User entity'
+      type: object
+      properties:
+        id:
+          description: 'A unique user id'
+          type: integer
+          minimum: 1
+        name:
+          description: 'A user name'
+          type: string
+          minimum: 1
+          maximum: 255
+        email:
+          description: 'A user email'
+          type: string
+          minLength: 1
+          maxLength: 255
+        created_at:
+          description: 'When the user has been created'
+          type: string
+          format: 'YYYY/MM/DD'
+          example: '2022/02/02'
+        updated_at:
+          description: 'When the user has been updated'
+          type: string
+          format: 'YYYY/MM/DD'
+          example: '2022/02/02'
+      example: |-
+        {
+          "id": 1,
+          "name": "Test TEST",
+          "email": "test@test.com",
+          "created_at": "2022/02/02",
+          "updated_at": "2022/08/02"  
+        }
+
+    Message:
+      description: 'Message entity'
+      type: object
+      properties:
+        rental_id:
+          description: 'A valid rental id'
+          type: integer
+          minimum: 1
+        user_id:
+          description: 'A valid user id'
+          type: integer
+          minimum: 1
+        message:
+          description: 'A plain text message'
+          type: string
+          minLength: 10
+          maxLength: 2000
+      required:
+        - rental_id
+        - user_id
+        - message
+      example: |-
+        {
+          "rental_id":1,
+          "user_id":1,
+          "message":"Hello I would like to rent your house..."
+        }
+
+    RentalList:
+      description: 'Rental entity list'
+      type: object
+      properties:
+        rentals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rental'
+
+    Rental:
+      description: 'Rental entity'
+      type: object
+      properties:
+        id:
+          description: 'A unique rental id'
+          type: integer
+          minimum: 1
+        name:
+          description: 'A short name for the rental'
+          type: string
+          minLength: 10
+          maxLength: 255
+        surface:
+          description: 'Surface in square meters'
+          type: integer
+          minimum: 1
+        price:
+          description: 'Price in euro cents'
+          type: integer
+          minimum: 1
+        picture:
+          description: 'Array of pictures path'
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+        description:
+          description: 'A plain text message'
+          type: string
+          minLength: 10
+          maxLength: 2000
+        owner_id:
+          description: 'A valid user id'
+          type: integer
+          minimum: 1
+        created_at:
+          description: 'When the location has been created'
+          type: string
+          format: 'YYYY/MM/DD'
+          example: '2022/02/02'
+        updated_at:
+          description: 'When the location has been updated'
+          type: string
+          format: 'YYYY/MM/DD'
+          example: '2022/02/02'
+      required:
+        - name
+        - surface
+        - price
+        - description
+      example: |-
+        {
+          "id": 1,
+          "name": "dream house",
+          "surface": 24,
+          "price": 30,
+          "picture": ["https://blog.technavio.org/wp-content/uploads/2018/12/Online-House-Rental-Sites.jpg"],
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.",
+          "owner_id": 1,
+          "created_at": "2012/12/02",
+          "updated_at": "2014/12/02"  
+        }
+
+    RentalCREATE:
+      description: 'An update for the Rental entity'
+      type: object
+      properties:
+        name:
+          description: 'A short name for the rental'
+          type: string
+          minLength: 10
+          maxLength: 255
+        surface:
+          description: 'Surface in square meters'
+          type: integer
+          minimum: 1
+        price:
+          description: 'Price in euro cents'
+          type: integer
+          minimum: 1
+        picture:
+          description: 'A picture as binary file'
+          type: string
+          format: binary
+        description:
+          description: 'A plain text message'
+          type: string
+          minLength: 10
+          maxLength: 2000
+      required:
+        - name
+        - surface
+        - price
+        - picture
+        - description
+      example: |-
+        {
+          "name": "dream house",
+          "surface": 24,
+          "price": 30,
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat."
+        }
+
+    RentalUPDATE:
+      description: 'An update for the Rental entity'
+      type: object
+      properties:
+        name:
+          description: 'A short name for the rental'
+          type: string
+          minLength: 10
+          maxLength: 255
+        surface:
+          description: 'Surface in square meters'
+          type: integer
+          minimum: 1
+        price:
+          description: 'Price in euro cents'
+          type: integer
+          minimum: 1
+        description:
+          description: 'A plain text message'
+          type: string
+          minLength: 10
+          maxLength: 2000
+      required:
+        - name
+        - surface
+        - price
+        - description
+      example: |-
+        {
+          "name": "dream house",
+          "surface": 24,
+          "price": 30,
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat."
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

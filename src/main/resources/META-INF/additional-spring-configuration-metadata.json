@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "jwt.signing.secret_key",
+    "type": "java.lang.String",
+    "description": "The key used to sign jwt tokens"
+  },
+  {
+    "name": "application.upload.storage_path",
+    "type": "java.lang.String",
+    "description": "The storage for the application."
+  },
+  {
+    "name": "application.upload.public_dir_name",
+    "type": "java.lang.String",
+    "description": "The directory name for the public accessible files."
+  }
+]}

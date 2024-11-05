@@ -21,8 +21,14 @@ import com.chatop.rental_backend.requests.auth.RegisterRequest;
 import com.chatop.rental_backend.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Authentication")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
@@ -46,8 +52,17 @@ public class AuthenticationController {
   }
 
   /** Authenticate a user */
-  @Operation(summary = "Authentication for a user",
-      description = "Authenticate a user and have a JWT token as response")
+  @Operation(operationId = "login", summary = "Authentication for a user",
+      description = "Authenticate a user and have a JWT token as response",
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "jwt token to be used on secured endpoints",
+              content = {@Content(mediaType = "application/json",
+                  schema = @Schema(implementation = JwtDto.class))}),
+          @ApiResponse(responseCode = "401", description = "Unauthorized request",
+              content = {@Content(mediaType = "application/json",
+                  schema = @Schema(implementation = BadCredentialsException.class))})})
+  @SecurityRequirements()
   @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<JwtDto> login(@Valid @RequestBody final LoginRequest request)
@@ -59,12 +74,21 @@ public class AuthenticationController {
   }
 
   /** Register a user */
-  @Operation(summary = "Register for a user",
-      description = "Register a user and have a JWT token as response")
+  @Operation(operationId = "register", summary = "Register for a user",
+      description = "Register a user and have a JWT token as response",
+      responses = {
+          @ApiResponse(responseCode = "200",
+              description = "jwt token to be used on secured endpoints",
+              content = {@Content(mediaType = "application/json",
+                  schema = @Schema(implementation = JwtDto.class))}),
+          @ApiResponse(responseCode = "422", description = "Unprocessable Entity",
+              content = {@Content(mediaType = "application/json",
+                  schema = @Schema(implementation = ValidationException.class))})})
+  @SecurityRequirements()
   @Transactional
   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<JwtDto> login(@Valid @RequestBody final RegisterRequest request)
+  public ResponseEntity<JwtDto> register(@Valid @RequestBody final RegisterRequest request)
       throws ValidationException {
 
     final var jwtDto =

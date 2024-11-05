@@ -32,8 +32,10 @@ import com.chatop.rental_backend.service.models.RentalService;
 import com.chatop.rental_backend.service.storage.StorageService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Rentals")
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
@@ -51,9 +53,11 @@ public class RentalController {
   }
 
   /** Create a rental */
-  @Operation(summary = "Create a rental", description = "Create a new rental for a specific user, it is immediately visible")
+  @Operation(summary = "Create a rental",
+      description = "Create a new rental for a specific user, it is immediately visible")
   @Transactional
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SimpleMessage> createRental(final Authentication authentication,
       @Valid @ModelAttribute @RequestBody final CreateRentalRequest request)
       throws IOException, StorageIoException {
@@ -98,9 +102,11 @@ public class RentalController {
   }
 
   /** Update a specific rental */
-  @Operation(summary = "Update a rental", description = "Update details about a rental, except the picture that cannot be changed for now")
+  @Operation(summary = "Update a rental",
+      description = "Update details about a rental, except the picture that cannot be changed for now")
   @Transactional
-  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SimpleMessage> updateRental(@PathVariable(value = "id") final Long rentalId,
       @Valid @ModelAttribute @RequestBody final UpdateRentalRequest request)
       throws ResourceNotFoundException {

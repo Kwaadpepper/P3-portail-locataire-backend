@@ -13,7 +13,9 @@ import com.chatop.rental_backend.presenter.UserPresenter;
 import com.chatop.rental_backend.service.models.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Users")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {

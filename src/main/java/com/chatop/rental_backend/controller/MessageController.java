@@ -20,7 +20,9 @@ import com.chatop.rental_backend.service.models.RentalService;
 import com.chatop.rental_backend.service.models.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Messages")
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {

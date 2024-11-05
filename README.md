@@ -2,8 +2,8 @@
 
 ## Install Dependencies
 
-- **Maven** `Apache Maven 3.6.3`
-- **JDK** `21 LTS`
+- **Maven** `Apache Maven 3.6.3` [Install Maven](https://www.baeldung.com/install-maven-on-windows-linux-mac)
+- **JDK** `21 LTS` Install OpenJdk [Linux](https://www.baeldung.com/ubuntu-install-jdk) [Windows](https://www.baeldung.com/openjdk-windows-installation)
 
 ## Compilation
 
@@ -14,6 +14,9 @@
 ## Prepare needed services
 
 Choose between **MariaDB** or **PostgresSql**
+
+You can install mariadb or postgres using `podman run --name mariadb -e MARIADB_ROOT_PASSWORD=MyPassword -p 3306:3306 -d mariadb:latest` or `podman run --name postgres -e POSTGRES_PASSWORD=MyPassword -p 5432:5432 -d postgres:latest`
+Of course you can use `docker` instead of `podman`
 
 1. Migration can be launched using ***Flyway*** (Postgres only), to do this use env vars `APP_DB_MIGRATE_ON_START` and `APP_DB_MIGRATION_SCHEMA` -> see `.env.example`
 2. Else look at `resources/sql/migration_1.0.0.mariadb.sql` or `resources/sql/migration_1.0.0.postgres.sql` and run one of these

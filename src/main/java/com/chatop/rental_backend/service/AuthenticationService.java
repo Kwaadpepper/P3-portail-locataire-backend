@@ -66,7 +66,8 @@ public class AuthenticationService {
   /** Authenticate a user using ApiToken */
   public User authenticate(final UUID apiToken) throws BadCredentialsException {
     try {
-      final var authentication = authenticationManager.authenticate(ApiAuthenticationToken.unauthenticated(apiToken));
+      final var authentication =
+          authenticationManager.authenticate(ApiAuthenticationToken.unauthenticated(apiToken));
       return toUser(authentication);
     } catch (LockedException | DisabledException e) {
       logger.debug("The use account is '%s'".formatted(e.getClass().getSimpleName()));

@@ -2,8 +2,10 @@ package com.chatop.rental_backend.repository;
 
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import com.chatop.rental_backend.model.User;
 
 @Repository

@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.chatop.rental_backend.service.user_details.ApiUserDetailsService;
 
-/** Authentication provider for user api token */
+/** Authentication provider for user API token */
 public final class ApiAuthenticationProvider implements AuthenticationProvider {
   private static final Log logger = LogFactory.getLog(ApiAuthenticationProvider.class);
 
@@ -25,7 +25,8 @@ public final class ApiAuthenticationProvider implements AuthenticationProvider {
   }
 
   @Override
-  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+  public Authentication authenticate(final Authentication authentication)
+      throws AuthenticationException {
     try {
       final var apiToken = (ApiAuthenticationToken) authentication;
       final var userDetails = userDetailsService.loadUserByUsername(apiToken.getToken());

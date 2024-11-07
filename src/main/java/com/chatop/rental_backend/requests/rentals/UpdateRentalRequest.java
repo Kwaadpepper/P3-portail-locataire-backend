@@ -1,13 +1,17 @@
 package com.chatop.rental_backend.requests.rentals;
 
+import java.time.ZonedDateTime;
+
 import com.chatop.rental_backend.model.Rental;
 import com.chatop.rental_backend.requests.UpdateRequest;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@Schema(name = "Updating rental parameters")
 public final class UpdateRentalRequest implements UpdateRequest<Rental> {
 
   @NotBlank
@@ -62,5 +66,6 @@ public final class UpdateRentalRequest implements UpdateRequest<Rental> {
     model.setPrice(price);
     model.setSurface(surface);
     model.setDescription(description);
+    model.setUpdatedAt(ZonedDateTime.now());
   }
 }

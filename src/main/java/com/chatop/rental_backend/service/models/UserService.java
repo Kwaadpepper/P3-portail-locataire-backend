@@ -10,9 +10,9 @@ import com.chatop.rental_backend.repository.UserRepository;
 
 @Service
 public class UserService {
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(final UserRepository userRepository) {
     this.userRepository = userRepository;
   }
 
@@ -36,7 +36,7 @@ public class UserService {
     return userRepository.findAll();
   }
 
-  public User saveUser(User user) {
+  public User saveUser(final User user) {
     return userRepository.save(user);
   }
 

@@ -21,8 +21,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
+@Tag(name = "Files serving")
 @RestController
 public class StorageController {
   private final StorageService storageService;
@@ -35,11 +37,13 @@ public class StorageController {
   }
 
   /** Serve storage/public files that were stored using our FileStoragehelper */
-  @Operation(summary = "Get a file from public storage", description = "Output a file that was stored internally")
+  @Operation(summary = "Get a file from public storage",
+      description = "Output a file that was stored internally")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Successfully retrieved", content = @Content(schema = @Schema(implementation = Resource.class))),
-      @ApiResponse(responseCode = "404", description = "Not found - The file was not found")
-  })
+      @ApiResponse(responseCode = "200", description = "Successfully retrieved",
+          content = @Content(schema = @Schema(implementation = Resource.class))),
+      @ApiResponse(responseCode = "404", description = "Not found - The file was not found",
+          content = @Content(contentSchema = @Schema(implementation = void.class)))})
   @GetMapping(value = "/public/**", produces = MediaType.ALL_VALUE)
   public ResponseEntity<Resource> servePublicFile(final HttpServletRequest request)
       throws IOException, StorageIoException {

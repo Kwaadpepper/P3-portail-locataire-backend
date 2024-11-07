@@ -12,8 +12,7 @@ import com.chatop.rental_backend.configuration.AppConfiguration;
 
 /**
  * Inspired from
- * {@link org.springframework.security.authentication.UsernamePasswordAuthenticationToken}.
- * This
+ * {@link org.springframework.security.authentication.UsernamePasswordAuthenticationToken}. This
  * implementation is designed for a simple presentation of an API token.
  *
  */
@@ -25,8 +24,7 @@ public class ApiAuthenticationToken extends AbstractAuthenticationToken {
 
   /**
    * This constructor should only be used by <code>AuthenticationManager</code> or
-   * <code>AuthenticationProvider</code> implementations that are satisfied with
-   * producing a trusted
+   * <code>AuthenticationProvider</code> implementations that are satisfied with producing a trusted
    * (i.e. {@link #isAuthenticated()} = <code>true</code>) authentication token.
    *
    * @param principal
@@ -43,8 +41,7 @@ public class ApiAuthenticationToken extends AbstractAuthenticationToken {
 
   /**
    * This constructor can be safely used by any code that wishes to create a
-   * <code>ApiAuthentificationToken</code>, as the {@link #isAuthenticated()} will
-   * return
+   * <code>ApiAuthentificationToken</code>, as the {@link #isAuthenticated()} will return
    * <code>false</code>.
    *
    */

@@ -16,7 +16,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
@@ -29,74 +28,94 @@ import com.chatop.rental_backend.exception.exceptions.JwtExpiredException;
 import com.chatop.rental_backend.exception.exceptions.ResourceNotFoundException;
 import com.chatop.rental_backend.exception.exceptions.ValidationException;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+  @Hidden
   @ExceptionHandler(BadCredentialsException.class)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final BadCredentialsException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails("Bad credentials", request),
         HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(JwtAuthenticationFailureException.class)
-  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  @ApiResponse(responseCode = "401", description = "Jwt token could not be authenticated",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final JwtAuthenticationFailureException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(JwtExpiredException.class)
-  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  @ApiResponse(responseCode = "401", description = "Jwt token is expired",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final JwtExpiredException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(ResourceNotFoundException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ApiResponse(responseCode = "404", description = "The wanted resource could not be found",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final ResourceNotFoundException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.NOT_FOUND);
   }
 
+  @Hidden
   @ExceptionHandler(Throwable.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public ResponseEntity<Object> handleException(final Throwable ex, final WebRequest request) {
+  @ApiResponse(responseCode = "500", description = "An unmanageable error occurred",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
+  public ResponseEntity<ApiErrorDetails> handleException(final Throwable ex,
+      final WebRequest request) {
     logger.fatal("Error : '%s' on uri '%s'".formatted(ex.getMessage(), getRequestUri(request)), ex);
     return new ResponseEntity<>(toErrorDetails("Server error", request),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @Hidden
   @ExceptionHandler(UsernameNotFoundException.class)
-  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  @ApiResponse(responseCode = "401", description = "The given credential are invalid",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final UsernameNotFoundException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(ValidationException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ApiResponse(responseCode = "400",
+      description = "Some fields are invalid, the reason will be on 'message'",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final ValidationException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.BAD_REQUEST);
   }
 
-  @Override
-  @Nullable
-  protected ResponseEntity<Object> handleExceptionInternal(final Exception ex,
-      @Nullable final Object body, final HttpHeaders headers, final HttpStatusCode statusCode,
-      final WebRequest request) {
 
-    /** Don't handle error if parent did not. */
-    if (super.handleExceptionInternal(ex, body, headers, statusCode, request) == null) {
-      return null;
-    }
-
-    return new ResponseEntity<>(toErrorDetails(ex, request), statusCode);
-  }
-
+  @Hidden
+  @ApiResponse(responseCode = "400",
+      description = "Some fields are invalid, the reason will be on 'message'",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ValidationErrorDetails.class)))
   @Override
   @Nullable
   protected ResponseEntity<Object> handleHandlerMethodValidationException(
@@ -105,7 +124,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     final Map<String, String> errors = new HashMap<>();
     ex.getAllValidationResults().forEach(error -> {
-      final var fieldName = toSnakeCase(error.getMethodParameter().getParameterName());
+      final var parameterName = error.getMethodParameter().getParameterName();
+      final var fieldName = toSnakeCase(parameterName != null ? parameterName : "unknown");
       final var errorMessage = error.getResolvableErrors().stream()
           .map(MessageSourceResolvable::getDefaultMessage).toList().toString();
       errors.put(fieldName, errorMessage);
@@ -116,7 +136,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @Hidden
+  @ApiResponse(responseCode = "400",
+      description = "Some fields are invalid, the reason will be on 'message'",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ValidationErrorDetails.class)))
   @Nullable
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(

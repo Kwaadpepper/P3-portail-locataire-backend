@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatop.rental_backend.dto.ApiErrorDetails;
 import com.chatop.rental_backend.dto.SimpleMessage;
+import com.chatop.rental_backend.dto.UserDto;
+import com.chatop.rental_backend.dto.ValidationErrorDetails;
 import com.chatop.rental_backend.exception.exceptions.ValidationException;
 import com.chatop.rental_backend.model.Message;
 import com.chatop.rental_backend.requests.message.SendMessageRequest;
@@ -20,7 +23,13 @@ import com.chatop.rental_backend.service.models.RentalService;
 import com.chatop.rental_backend.service.models.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Messages")
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {
@@ -39,6 +48,16 @@ public class MessageController {
   /** Save a new message about a rental */
   @Operation(summary = "Save a message",
       description = "Send a message form a user to another for a specific rental")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully retrieved",
+          content = @Content(schema = @Schema(implementation = UserDto.class))),
+      @ApiResponse(responseCode = "400",
+          description = "Some fields are invalid, the reason will be on 'message'",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ValidationErrorDetails.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @Transactional
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)

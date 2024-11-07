@@ -34,6 +34,28 @@ public class FileSystemStorageService implements StorageService {
     privateLocation = properties.getPrivateDirectoryPath();
   }
 
+  /** Try to get a unique file name */
+  private static String getFileUniqueName(final Path folderPath, final String fileName) {
+    var newFileName = fileName;
+    var attempts = 0;
+    final var maxAttempts = 20;
+    while (Files.exists(folderPath.resolve(newFileName))) {
+      if (attempts++ >= maxAttempts) {
+        throw new ServerErrorException("Failed to find a unique filename");
+      }
+      newFileName =
+          "%s-%s.%s".formatted(newFileName, uniqId(), FilenameUtils.getExtension(newFileName));
+    }
+    return newFileName;
+  }
+
+  /** Create a new unique id using UUID */
+  private static String uniqId() {
+    return List.of(UUID.randomUUID().toString().split("-")).stream()
+        .map(value -> Long.parseLong(value, 16)).map(String::valueOf)
+        .collect(Collectors.joining(""));
+  }
+
   @Override
   public boolean exists(final String filePath, final boolean inPublic) throws StorageIoException {
     try {
@@ -107,8 +129,8 @@ public class FileSystemStorageService implements StorageService {
 
       fileName = FileStorageHelper.sanitizeFileName(fileName);
 
-      destinationDirectory = storageDirectory.resolve(FileStorageHelper.getStoragePath(modelClass, fileName))
-          .normalize();
+      destinationDirectory = storageDirectory
+          .resolve(FileStorageHelper.getStoragePath(modelClass, fileName)).normalize();
       outputPath = destinationDirectory.resolve(Path.of(fileName));
       destinationPath = outputPath.toAbsolutePath();
 
@@ -148,32 +170,10 @@ public class FileSystemStorageService implements StorageService {
     }
   }
 
-  /** Try to get a unique file name */
-  private static String getFileUniqueName(Path folderPath, String fileName) {
-    var newFileName = fileName;
-    var attempts = 0;
-    final var maxAttempts = 20;
-    while (Files.exists(folderPath.resolve(newFileName))) {
-      if (attempts++ >= maxAttempts) {
-        throw new ServerErrorException("Failed to find a unique filename");
-      }
-      newFileName = "%s-%s.%s".formatted(newFileName, uniqId(), FilenameUtils.getExtension(newFileName));
-    }
-    return newFileName;
-  }
-
   /** Converts a string file path to a Path object */
   private Path toPathObject(final String filePath, final boolean inPublic)
       throws InvalidPathException {
     final var location = inPublic ? publicLocation : privateLocation;
     return location.resolve(filePath);
-  }
-
-  /** Create a new unique id using UUID */
-  private static String uniqId() {
-    return List.of(UUID.randomUUID().toString().split("-"))
-        .stream().map(value -> Long.parseLong(value, 16))
-        .map(String::valueOf)
-        .collect(Collectors.joining(""));
   }
 }

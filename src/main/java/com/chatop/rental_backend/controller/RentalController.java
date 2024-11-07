@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatop.rental_backend.dto.ApiErrorDetails;
 import com.chatop.rental_backend.dto.RentalDto;
 import com.chatop.rental_backend.dto.RentalListDto;
 import com.chatop.rental_backend.dto.SimpleMessage;
+import com.chatop.rental_backend.dto.UserDto;
+import com.chatop.rental_backend.dto.ValidationErrorDetails;
 import com.chatop.rental_backend.exception.exceptions.ResourceNotFoundException;
 import com.chatop.rental_backend.exception.exceptions.ValidationException;
 import com.chatop.rental_backend.exception.exceptions.storage.StorageIoException;
@@ -32,8 +35,14 @@ import com.chatop.rental_backend.service.models.RentalService;
 import com.chatop.rental_backend.service.storage.StorageService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Rentals")
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
@@ -51,9 +60,21 @@ public class RentalController {
   }
 
   /** Create a rental */
-  @Operation(summary = "Create a rental", description = "Create a new rental for a specific user, it is immediately visible")
+  @Operation(summary = "Create a rental",
+      description = "Create a new rental for a specific user, it is immediately visible")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully created",
+          content = @Content(schema = @Schema(implementation = UserDto.class))),
+      @ApiResponse(responseCode = "400",
+          description = "Some fields are invalid, the reason will be on 'message'",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ValidationErrorDetails.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @Transactional
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SimpleMessage> createRental(final Authentication authentication,
       @Valid @ModelAttribute @RequestBody final CreateRentalRequest request)
       throws IOException, StorageIoException {
@@ -80,6 +101,12 @@ public class RentalController {
 
   /** Get a the list of rentals */
   @Operation(summary = "Get rentals", description = "Have a non paginated rental list")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "The list of rentals",
+          content = @Content(schema = @Schema(implementation = UserDto.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public RentalListDto getAllRentals() {
     return rentalPresenter.presentModelList(rentalService.getRentals());
@@ -87,6 +114,15 @@ public class RentalController {
 
   /** Get a specific rental */
   @Operation(summary = "Get a rental", description = "Have specific details about a rental")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "The wanted rental",
+          content = @Content(schema = @Schema(implementation = UserDto.class))),
+      @ApiResponse(responseCode = "404", description = "The wanted resource could not be found",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<RentalDto> getRentalById(@PathVariable(value = "id") final long rentalId)
       throws ResourceNotFoundException {
@@ -98,9 +134,21 @@ public class RentalController {
   }
 
   /** Update a specific rental */
-  @Operation(summary = "Update a rental", description = "Update details about a rental, except the picture that cannot be changed for now")
+  @Operation(summary = "Update a rental",
+      description = "Update details about a rental, except the picture that cannot be changed for now")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully updated",
+          content = @Content(schema = @Schema(implementation = UserDto.class))),
+      @ApiResponse(responseCode = "400",
+          description = "Some fields are invalid, the reason will be on 'message'",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ValidationErrorDetails.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @Transactional
-  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SimpleMessage> updateRental(@PathVariable(value = "id") final Long rentalId,
       @Valid @ModelAttribute @RequestBody final UpdateRentalRequest request)
       throws ResourceNotFoundException {

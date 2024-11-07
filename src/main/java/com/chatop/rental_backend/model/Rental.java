@@ -2,8 +2,10 @@ package com.chatop.rental_backend.model;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -108,10 +110,6 @@ public class Rental implements Model {
 
 
   public void setDescription(final String description) {
-    if (description == null) {
-      return;
-    }
-
     this.description = description;
   }
 

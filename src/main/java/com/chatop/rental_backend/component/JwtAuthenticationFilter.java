@@ -28,9 +28,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Check if an Authorization header is set and
- * that it contains a valid JwtToken and
- * that it matches an actual User.
+ * Check if an Authorization header is set and that it contains a valid JwtToken and that it matches
+ * an actual User.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

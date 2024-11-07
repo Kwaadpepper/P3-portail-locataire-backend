@@ -26,10 +26,22 @@ public record RegisterRequest(
     @Schema(description =
         "The user plain text password, it should be at least 8 chars "
         + "long with mixed case, special and digits chars")
+    // Regular expression explanation https://regex101.com/r/dobmk2/1
     @Pattern(message = "password should be at least 8 chars "
         + "long with mixed case, special and digits chars",
-        regexp = "^.*(?=.{8,})(?=.*\\pL)(?=.*\\pN)(?=.*(?=\\p{Ll}+.*\\p{Lu})|(?=\\p{Lu}+"
-            + ".*\\p{Ll}))(?=.*[\\p{Z}|\\p{S}|\\p{P}]).*")
+        regexp = "^.*"
+            // At least 8 char long
+            + "(?=.{8,})"
+            // Contains letter char
+            + "(?=.*\\p{L})"
+            // Contains digit char
+            + "(?=.*\\p{N})"
+            // Contains mixed chars
+            + "(?=.*(?=(?=\\p{Ll}+.*\\p{Lu})|(?=\\p{Lu}+.*\\p{Ll})))"
+            // Contains special char
+            + "(?=.*[\\p{Z}|\\p{S}|\\p{P}])"
+            // Anything after
+            + ".*$")
     @NotNull
     @Size(min = 8, max = 255)
     String password

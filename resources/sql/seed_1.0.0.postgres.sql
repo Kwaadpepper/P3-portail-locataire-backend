@@ -1,4 +1,4 @@
--- USERS
+-- USERS - default pwd is 'password'
 INSERT INTO "users" ("id", "email", "name", "password", "api_token", "created_at", "updated_at") VALUES (1, 'ansel85@gmail.com','Dr. Henrietta Nikolaus','$argon2id$v=19$m=16384,t=2,p=1$0WuqQhWcZPF/reE5xWZoaQ$tFZkGIuUdAEGvd22/qmek20sTOwNf+RKIHm/tTlGzW8','a75cd159-4ecf-452d-9d7b-bb3afeba2234','2025-05-14 16:42:24','2025-09-30 06:50:57');
 INSERT INTO "users" ("id", "email", "name", "password", "api_token", "created_at", "updated_at") VALUES (2, 'palma21@gmail.com','Krystal Spinka','$argon2id$v=19$m=16384,t=2,p=1$Rt26GEdf5WiN/6PvlbVJ/Q$9Q+OWgP04ZVmDP0R/HiVsyu+fwBunk+1L3kkzcWAQQE','42ccb091-8fcb-458f-a85f-f224fe67d024','2024-10-25 19:13:50','2025-01-20 11:56:29');
 INSERT INTO "users" ("id", "email", "name", "password", "api_token", "created_at", "updated_at") VALUES (3, 'alf16@hotmail.com','Janie Heaney', '$argon2id$v=19$m=16384,t=2,p=1$0WuqQhWcZPF/reE5xWZoaQ$tFZkGIuUdAEGvd22/qmek20sTOwNf+RKIHm/tTlGzW8','6b8c767f-aa9f-48d3-b6c4-03e1f6879067','2024-12-03 17:17:44','2024-12-26 18:26:16');

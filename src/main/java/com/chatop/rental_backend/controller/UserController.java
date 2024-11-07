@@ -13,6 +13,8 @@ import com.chatop.rental_backend.presenter.UserPresenter;
 import com.chatop.rental_backend.service.models.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Users")
@@ -28,6 +30,8 @@ public class UserController {
   }
 
   /** Get a specific user */
+  @Parameter(required = true, in = ParameterIn.PATH, name = "id", description = "A Chatop user id",
+      example = "2")
   @Operation(summary = "Update a user", description = "Get some details about a spcific user")
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UserDto> getRentalById(@PathVariable(value = "id") final long userId) {

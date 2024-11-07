@@ -1,5 +1,7 @@
 package com.chatop.rental_backend.requests.rentals;
 
+import java.time.ZonedDateTime;
+
 import com.chatop.rental_backend.model.Rental;
 import com.chatop.rental_backend.requests.UpdateRequest;
 
@@ -64,5 +66,6 @@ public final class UpdateRentalRequest implements UpdateRequest<Rental> {
     model.setPrice(price);
     model.setSurface(surface);
     model.setDescription(description);
+    model.setUpdatedAt(ZonedDateTime.now());
   }
 }

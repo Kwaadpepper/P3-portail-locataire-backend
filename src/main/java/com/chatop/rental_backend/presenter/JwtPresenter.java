@@ -1,6 +1,7 @@
 package com.chatop.rental_backend.presenter;
 
 import org.springframework.stereotype.Component;
+
 import com.chatop.rental_backend.dto.JwtDto;
 
 @Component

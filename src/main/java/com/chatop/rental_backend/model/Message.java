@@ -1,6 +1,7 @@
 package com.chatop.rental_backend.model;
 
 import java.time.ZonedDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

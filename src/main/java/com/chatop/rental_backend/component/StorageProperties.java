@@ -1,11 +1,12 @@
 package com.chatop.rental_backend.component;
 
 import java.nio.file.Path;
+
 import org.springframework.stereotype.Component;
 
 import com.chatop.rental_backend.configuration.AppConfiguration;
 
-/** Holds properties of current app storage */
+/** Holds properties of current application storage */
 @Component
 public class StorageProperties {
   private final String storageDirectoryName;

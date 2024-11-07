@@ -15,11 +15,7 @@ public record ValidationErrorDetails(
     @Schema(description = "A descriptive message for the error", example= "Some fields could not be validated")
     String message,
 
-    @Schema(description = "A descriptive message for the error", example= """
-        {\
-          "firstName": "cannot be empty",\
-          "lastName": "cannot exceed 255 chars long"\
-        }""")
+    @Schema(description = "A descriptive message for the error")
     Map<String, String> errors,
 
     @Schema(description = "The uri used that was used", example = "/api/users/jean")

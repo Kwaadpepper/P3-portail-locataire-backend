@@ -28,6 +28,7 @@ import com.chatop.rental_backend.exception.exceptions.JwtExpiredException;
 import com.chatop.rental_backend.exception.exceptions.ResourceNotFoundException;
 import com.chatop.rental_backend.exception.exceptions.ValidationException;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,6 +36,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+  @Hidden
   @ExceptionHandler(BadCredentialsException.class)
   @ApiResponse(responseCode = "401", description = "User could not be authenticated",
       content = @Content(mediaType = "application/json",
@@ -45,6 +47,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(JwtAuthenticationFailureException.class)
   @ApiResponse(responseCode = "401", description = "Jwt token could not be authenticated",
       content = @Content(mediaType = "application/json",
@@ -54,6 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(JwtExpiredException.class)
   @ApiResponse(responseCode = "401", description = "Jwt token is expired",
       content = @Content(mediaType = "application/json",
@@ -63,6 +67,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(ResourceNotFoundException.class)
   @ApiResponse(responseCode = "404", description = "The wanted resource could not be found",
       content = @Content(mediaType = "application/json",
@@ -72,6 +77,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.NOT_FOUND);
   }
 
+  @Hidden
   @ExceptionHandler(Throwable.class)
   @ApiResponse(responseCode = "500", description = "An unmanageable error occurred",
       content = @Content(mediaType = "application/json",
@@ -83,14 +89,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @Hidden
   @ExceptionHandler(UsernameNotFoundException.class)
   @ApiResponse(responseCode = "401", description = "The given credential are invalid",
-      content = @Content(mediaType = "application/json"))
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ApiErrorDetails.class)))
   public ResponseEntity<ApiErrorDetails> handleException(final UsernameNotFoundException ex,
       final WebRequest request) {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.UNAUTHORIZED);
   }
 
+  @Hidden
   @ExceptionHandler(ValidationException.class)
   @ApiResponse(responseCode = "400",
       description = "Some fields are invalid, the reason will be on 'message'",
@@ -101,7 +110,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(toErrorDetails(ex, request), HttpStatus.BAD_REQUEST);
   }
 
-  @ApiResponse(responseCode = "422",
+
+  @Hidden
+  @ApiResponse(responseCode = "400",
       description = "Some fields are invalid, the reason will be on 'message'",
       content = @Content(mediaType = "application/json",
           schema = @Schema(implementation = ValidationErrorDetails.class)))
@@ -122,10 +133,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     return new ResponseEntity<>(
         toValidationErrorDetails("Some fields could not be validated", errors, request),
-        HttpStatus.UNPROCESSABLE_ENTITY);
+        HttpStatus.BAD_REQUEST);
   }
 
-  @ApiResponse(responseCode = "422",
+  @Hidden
+  @ApiResponse(responseCode = "400",
       description = "Some fields are invalid, the reason will be on 'message'",
       content = @Content(mediaType = "application/json",
           schema = @Schema(implementation = ValidationErrorDetails.class)))

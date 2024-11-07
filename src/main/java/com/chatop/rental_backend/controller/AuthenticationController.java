@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatop.rental_backend.dto.ApiErrorDetails;
 import com.chatop.rental_backend.dto.JwtDto;
 import com.chatop.rental_backend.dto.UserDto;
+import com.chatop.rental_backend.dto.ValidationErrorDetails;
 import com.chatop.rental_backend.exception.exceptions.ValidationException;
 import com.chatop.rental_backend.model.User;
 import com.chatop.rental_backend.presenter.UserPresenter;
@@ -21,7 +23,10 @@ import com.chatop.rental_backend.requests.auth.RegisterRequest;
 import com.chatop.rental_backend.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -42,6 +47,12 @@ public class AuthenticationController {
   /** Get authenticated user */
   @Operation(summary = "Get current user details",
       description = "Get user info for the user matching the JWT token in use")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully retrieved",
+          content = @Content(schema = @Schema(implementation = JwtDto.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UserDto> getAuthenticatedUserDetails() {
     final var user = getAuthenticatedUser();
@@ -51,9 +62,17 @@ public class AuthenticationController {
 
   /** Authenticate a user */
   @Operation(operationId = "login", summary = "Authentication for a user",
-      description = "Authenticate a user and have a JWT token as response",
-      responses = {@ApiResponse(responseCode = "200",
-          description = "jwt token to be used on secured endpoints")})
+      description = "Authenticate a user and have a JWT token as response")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully authenticated",
+          content = @Content(schema = @Schema(implementation = JwtDto.class))),
+      @ApiResponse(responseCode = "400",
+          description = "Some fields are invalid, the reason will be on 'message'",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ValidationErrorDetails.class))),
+      @ApiResponse(responseCode = "401", description = "User could not be authenticated",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ApiErrorDetails.class)))})
   @SecurityRequirements()
   @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,6 +89,13 @@ public class AuthenticationController {
       description = "Register a user and have a JWT token as response",
       responses = {@ApiResponse(responseCode = "200",
           description = "jwt token to be used on secured endpoints")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully registered",
+          content = @Content(schema = @Schema(implementation = JwtDto.class))),
+      @ApiResponse(responseCode = "400",
+          description = "Some fields are invalid, the reason will be on 'message'",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ValidationErrorDetails.class)))})
   @SecurityRequirements()
   @Transactional
   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,

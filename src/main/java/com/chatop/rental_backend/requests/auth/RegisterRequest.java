@@ -3,6 +3,7 @@ package com.chatop.rental_backend.requests.auth;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ public record RegisterRequest(
 
     @Schema(description = "The user plain text email tht should be a valid email")
     @NotNull
+    @NotEmpty
     @Email
     @Parameter(example = "sdsd")
     @Size(min = 4, max = 255)
@@ -20,6 +22,7 @@ public record RegisterRequest(
 
     @Schema(description = "The user plain text name")
     @NotNull
+    @NotEmpty
     @Size(min = 4, max = 255)
     String name,
 
@@ -43,6 +46,7 @@ public record RegisterRequest(
             // Anything after
             + ".*$")
     @NotNull
+    @NotEmpty
     @Size(min = 8, max = 255)
     String password
 

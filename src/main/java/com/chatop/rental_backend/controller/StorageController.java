@@ -42,7 +42,8 @@ public class StorageController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved",
           content = @Content(schema = @Schema(implementation = Resource.class))),
-      @ApiResponse(responseCode = "404", description = "Not found - The file was not found")})
+      @ApiResponse(responseCode = "404", description = "Not found - The file was not found",
+          content = @Content(contentSchema = @Schema(implementation = void.class)))})
   @GetMapping(value = "/public/**", produces = MediaType.ALL_VALUE)
   public ResponseEntity<Resource> servePublicFile(final HttpServletRequest request)
       throws IOException, StorageIoException {
